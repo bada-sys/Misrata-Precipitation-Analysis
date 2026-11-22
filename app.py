@@ -1,4 +1,4 @@
-
+﻿
 from pathlib import Path
 from io import BytesIO
 import zipfile
@@ -366,6 +366,10 @@ with tab4:
 
         data.columns = unique_columns
 
+        # Refresh column lists after renaming duplicates
+        numeric_columns = data.select_dtypes(include="number").columns.tolist()
+        all_columns = data.columns.tolist()
+
 
         if numeric_columns:
             possible_x = [
@@ -380,10 +384,12 @@ with tab4:
                 x_options
             )
 
+            y_options = [col for col in numeric_columns if col != x_col]
+
             y_cols = st.multiselect(
                 choose_y,
-                numeric_columns,
-                default=numeric_columns[:min(3, len(numeric_columns))]
+                y_options,
+                default=y_options[:min(3, len(y_options))]
             )
 
             if y_cols:
