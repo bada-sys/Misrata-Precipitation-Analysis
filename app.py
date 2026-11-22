@@ -100,6 +100,7 @@ tables = sorted(
 # =========================================================
 # 4. READ CSV TABLES
 # =========================================================
+
 @st.cache_data
 def read_table(file_name, file_bytes):
     try:
@@ -121,9 +122,28 @@ def read_table(file_name, file_bytes):
                 BytesIO(file_bytes),
                 encoding="utf-8-sig"
             )
-        return df
     except Exception:
-        return pd.read_csv(BytesIO(file_bytes))
+        df = pd.read_csv(BytesIO(file_bytes))
+
+    # Make every column name unique
+    seen = {}
+    unique_columns = []
+
+    for column in df.columns:
+        name = str(column).strip()
+        count = seen.get(name, 0)
+
+        if count == 0:
+            unique_columns.append(name)
+        else:
+            unique_columns.append(f"{name} ({count + 1})")
+
+        seen[name] = count + 1
+
+    df.columns = unique_columns
+
+    return df
+
 
 # =========================================================
 # 5. HEADER
