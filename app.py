@@ -344,6 +344,28 @@ with tab4:
         ).columns.tolist()
 
         all_columns = data.columns.tolist()
+        
+        # Ensure all column names are unique
+        original_columns = [
+            str(col).strip() for col in data.columns
+        ]
+
+        unique_columns = []
+        used_names = set()
+
+        for name in original_columns:
+            candidate = name
+            suffix = 2
+
+            while candidate in used_names:
+                candidate = f"{name} ({suffix})"
+                suffix += 1
+
+            unique_columns.append(candidate)
+            used_names.add(candidate)
+
+        data.columns = unique_columns
+
 
         if numeric_columns:
             possible_x = [
